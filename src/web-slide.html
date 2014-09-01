@@ -1,0 +1,55 @@
+<template id="template-web-slide">
+  <style>
+    :host {
+      transition: transform 0.6s ease, opacity 0.6s ease, background 0.6s ease;
+      transform-origin: 50% 50% 0;
+      opacity: 0;
+      backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      width: 640px;
+      height: 480px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-top: -240px;
+      margin-left: -320px;
+      background: #00F3A5;
+      color: rgba(0, 0, 0, 0.6);
+      font-family: 'Helvetica Neue';
+    }
+    :host(.active) {
+      opacity: 1;
+    }
+  </style>
+  <content></content>
+</template>
+
+<script>
+  var slideProto = Object.create(HTMLElement.prototype),
+    importDoc = document.currentScript.ownerDocument;
+
+  slideProto.createdCallback = slideProtoCreatedCallback;
+  slideProto.showSlide = showSlide;
+
+  function slideProtoCreatedCallback(){
+    var template = importDoc.querySelector('#template-web-slide');
+    var templateContent = document.importNode(template.content, true);
+    this.createShadowRoot().appendChild(templateContent);
+
+    this.parentNode.registerSlide(this);
+  }
+
+  function showSlide(expression) {
+    if(expression) {
+      this.classList.add('active');
+    } else {
+      this.classList.remove('active');
+    }
+  }
+
+  document.registerElement('web-slide', {prototype: slideProto});
+</script>

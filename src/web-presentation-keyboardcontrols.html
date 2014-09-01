@@ -1,0 +1,23 @@
+<script>
+  var keyboardControlsProto = Object.create(HTMLElement.prototype);
+
+  keyboardControlsProto.createdCallback = keyboardControlsProtoCreatedCallback;
+
+  function keyboardControlsProtoCreatedCallback() {
+    var keyboardcontrols = this;
+
+    document.onkeydown = function (event) {
+        switch (event.keyCode) {
+          case 32:
+          case 39:
+            keyboardcontrols.parentNode.nextSlide();
+            break;
+          case 37:
+            keyboardcontrols.parentNode.previousSlide();
+            break;
+        }
+    };
+  }
+
+  document.registerElement('web-presentation-keyboardcontrols', {prototype: keyboardControlsProto});
+</script>

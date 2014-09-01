@@ -1,0 +1,80 @@
+<template id="template-web-presentation">
+  <style>
+    :host {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      overflow: hidden;
+      background-color: #00F3A5;
+    }
+  </style>
+  <content></content>
+</template>
+
+<script>
+  var presentationProto = Object.create(HTMLElement.prototype),
+  importDoc = document.currentScript.ownerDocument;
+
+  PresentationData = {
+    slides: [],
+    _activeSlide: 0,
+    get slideCount() { return this.slides.length },
+    get activeSlide() { return this._activeSlide; },
+    set activeSlide(value) {
+      this._activeSlide = value;
+
+      this.slides.forEach(function(element, index) {
+        element.showSlide(index === value);
+      });
+    }
+  };
+
+  presentationProto.createdCallback = presentationProtoCreatedCallback;
+  presentationProto.registerSlide = registerSlide;
+  presentationProto.previousSlide = previousSlide;
+  presentationProto.nextSlide = nextSlide;
+
+  function presentationProtoCreatedCallback(){
+    var template = importDoc.querySelector('#template-web-presentation');
+    var templateContent = document.importNode(template.content, true);
+    this.createShadowRoot().appendChild(templateContent);
+    console.log("presentation created");
+  }
+
+  function registerSlide(slide) {
+    if(!this.slideData){
+      this.slideData = Object.create(PresentationData);
+      slide.showSlide(true);
+    }
+
+    this.slideData.slides.push(slide);
+
+    console.log('slide ' + this.slideData.slides.length + ' registered');
+  }
+
+  function previousSlide(){
+    var activeSlide = this.slideData.activeSlide;
+
+    if(activeSlide <= 0) {
+      return;
+    }
+
+    activeSlide = activeSlide-1;
+    this.slideData.activeSlide = activeSlide;
+  }
+
+  function nextSlide(){
+    var activeSlide = this.slideData.activeSlide;
+
+    if(activeSlide >= this.slideData.slideCount - 1) {
+      return;
+    }
+
+    activeSlide = activeSlide+1;
+    this.slideData.activeSlide = activeSlide;
+  }
+
+  document.registerElement('web-presentation', {prototype: presentationProto});
+</script>

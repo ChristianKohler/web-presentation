@@ -1,0 +1,32 @@
+{
+  "name": "web-presentation",
+  "version": "0.0.1",
+  "description": "Pure Web Components Presentation Framework",
+  "main": "index.js",
+  "dependencies": {
+    "gulp-webserver": "~0.7.1"
+  },
+  "devDependencies": {
+    "gulp-webserver": "^0.7.1",
+    "gulp": "^3.8.7",
+    "gulp-concat": "^2.3.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://ChristianKohler@github.com/ChristianKohler/web-presentation.git"
+  },
+  "keywords": [
+    "web",
+    "components",
+    "presentation"
+  ],
+  "author": "Christian Kohler",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ChristianKohler/web-presentation/issues"
+  },
+  "homepage": "https://github.com/ChristianKohler/web-presentation"
+}

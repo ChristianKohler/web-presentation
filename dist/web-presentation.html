@@ -1,0 +1,160 @@
+<template id="template-web-presentation">
+  <style>
+    :host {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      overflow: hidden;
+      background-color: #00F3A5;
+    }
+  </style>
+  <content></content>
+</template>
+
+<script>
+  var presentationProto = Object.create(HTMLElement.prototype),
+  importDoc = document.currentScript.ownerDocument;
+
+  PresentationData = {
+    slides: [],
+    _activeSlide: 0,
+    get slideCount() { return this.slides.length },
+    get activeSlide() { return this._activeSlide; },
+    set activeSlide(value) {
+      this._activeSlide = value;
+
+      this.slides.forEach(function(element, index) {
+        element.showSlide(index === value);
+      });
+    }
+  };
+
+  presentationProto.createdCallback = presentationProtoCreatedCallback;
+  presentationProto.registerSlide = registerSlide;
+  presentationProto.previousSlide = previousSlide;
+  presentationProto.nextSlide = nextSlide;
+
+  function presentationProtoCreatedCallback(){
+    var template = importDoc.querySelector('#template-web-presentation');
+    var templateContent = document.importNode(template.content, true);
+    this.createShadowRoot().appendChild(templateContent);
+    console.log("presentation created");
+  }
+
+  function registerSlide(slide) {
+    if(!this.slideData){
+      this.slideData = Object.create(PresentationData);
+      slide.showSlide(true);
+    }
+
+    this.slideData.slides.push(slide);
+
+    console.log('slide ' + this.slideData.slides.length + ' registered');
+  }
+
+  function previousSlide(){
+    var activeSlide = this.slideData.activeSlide;
+
+    if(activeSlide <= 0) {
+      return;
+    }
+
+    activeSlide = activeSlide-1;
+    this.slideData.activeSlide = activeSlide;
+  }
+
+  function nextSlide(){
+    var activeSlide = this.slideData.activeSlide;
+
+    if(activeSlide >= this.slideData.slideCount - 1) {
+      return;
+    }
+
+    activeSlide = activeSlide+1;
+    this.slideData.activeSlide = activeSlide;
+  }
+
+  document.registerElement('web-presentation', {prototype: presentationProto});
+</script>
+
+<template id="template-web-slide">
+  <style>
+    :host {
+      transition: transform 0.6s ease, opacity 0.6s ease, background 0.6s ease;
+      transform-origin: 50% 50% 0;
+      opacity: 0;
+      backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      width: 640px;
+      height: 480px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-top: -240px;
+      margin-left: -320px;
+      background: #00F3A5;
+      color: rgba(0, 0, 0, 0.6);
+      font-family: 'Helvetica Neue';
+    }
+    :host(.active) {
+      opacity: 1;
+    }
+  </style>
+  <content></content>
+</template>
+
+<script>
+  var slideProto = Object.create(HTMLElement.prototype),
+    importDoc = document.currentScript.ownerDocument;
+
+  slideProto.createdCallback = slideProtoCreatedCallback;
+  slideProto.showSlide = showSlide;
+
+  function slideProtoCreatedCallback(){
+    var template = importDoc.querySelector('#template-web-slide');
+    var templateContent = document.importNode(template.content, true);
+    this.createShadowRoot().appendChild(templateContent);
+
+    this.parentNode.registerSlide(this);
+  }
+
+  function showSlide(expression) {
+    if(expression) {
+      this.classList.add('active');
+    } else {
+      this.classList.remove('active');
+    }
+  }
+
+  document.registerElement('web-slide', {prototype: slideProto});
+</script>
+
+<script>
+  var keyboardControlsProto = Object.create(HTMLElement.prototype);
+
+  keyboardControlsProto.createdCallback = keyboardControlsProtoCreatedCallback;
+
+  function keyboardControlsProtoCreatedCallback() {
+    var keyboardcontrols = this;
+
+    document.onkeydown = function (event) {
+        switch (event.keyCode) {
+          case 32:
+          case 39:
+            keyboardcontrols.parentNode.nextSlide();
+            break;
+          case 37:
+            keyboardcontrols.parentNode.previousSlide();
+            break;
+        }
+    };
+  }
+
+  document.registerElement('web-presentation-keyboardcontrols', {prototype: keyboardControlsProto});
+</script>
