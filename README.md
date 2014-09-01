@@ -1,4 +1,14 @@
-# web-presentation
+Pikaday
+========
+
+### A presentation framework created with web components
+
+* Lightweight
+* No dependencies
+* Modular
+* Extendable
+
+
 
 ## Getting Started
 
