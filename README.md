@@ -1,4 +1,4 @@
-Pikaday
+web-presentation
 ========
 
 ### A presentation framework created with web components
