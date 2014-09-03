@@ -7,7 +7,6 @@
       left: 0;
       right: 0;
       overflow: hidden;
-      background-color: #00F3A5;
     }
   </style>
   <content></content>
@@ -21,6 +20,7 @@
     slides: [],
     _activeSlide: 0,
     get slideCount() { return this.slides.length },
+    get activeSlideElement() { return this.slides[this._activeSlide]; },
     get activeSlide() { return this._activeSlide; },
     set activeSlide(value) {
       this._activeSlide = value;
@@ -82,9 +82,27 @@
 <template id="template-web-slide">
   <style>
     :host {
-      transition: transform 0.6s ease, opacity 0.6s ease, background 0.6s ease;
-      transform-origin: 50% 50% 0;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
       opacity: 0;
+      background-color: #F9F2E7;
+      color: rgba(0, 0, 0, 0.6);
+      font-family: 'Helvetica Neue';
+    }
+
+    :host(.active) {
+      opacity: 1;
+    }
+
+    :host div#content {
+      transform-origin: 50% 50% 0;
+      transition: opacity 0.2s ease;
       backface-visibility: hidden;
       display: flex;
       flex-direction: column;
@@ -98,15 +116,17 @@
       left: 50%;
       margin-top: -240px;
       margin-left: -320px;
-      background: #00F3A5;
-      color: rgba(0, 0, 0, 0.6);
-      font-family: 'Helvetica Neue';
+      opacity: 0;
     }
-    :host(.active) {
+
+    :host(.active) div#content {
       opacity: 1;
     }
   </style>
-  <content></content>
+
+  <div id="content">
+    <content></content>
+  </div>
 </template>
 
 <script>
@@ -133,6 +153,32 @@
   }
 
   document.registerElement('web-slide', {prototype: slideProto});
+</script>
+
+<template id="template-web-slide-title">
+  <style>
+    :host {
+      background-color: #40C0CB;
+      color: #F9F2E7;
+    }
+  </style>
+</template>
+
+<script>
+  var slideTitleProto = Object.create(slideProto),
+    importDoc = document.currentScript.ownerDocument;
+
+  slideTitleProto.createdCallback = slideTitleProtoCreatedCallback;
+
+  function slideTitleProtoCreatedCallback(){
+    slideProto.createdCallback.call(this);
+
+    var template = importDoc.querySelector('#template-web-slide-title');
+    var templateContent = document.importNode(template.content, true);
+    this.shadowRoot.insertBefore(templateContent, this.shadowRoot.querySelector('#content'));
+  }
+
+  document.registerElement('web-slide-title', {prototype: slideTitleProto});
 </script>
 
 <script>

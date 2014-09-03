@@ -7,7 +7,6 @@
       left: 0;
       right: 0;
       overflow: hidden;
-      background-color: #00F3A5;
     }
   </style>
   <content></content>
@@ -21,6 +20,7 @@
     slides: [],
     _activeSlide: 0,
     get slideCount() { return this.slides.length },
+    get activeSlideElement() { return this.slides[this._activeSlide]; },
     get activeSlide() { return this._activeSlide; },
     set activeSlide(value) {
       this._activeSlide = value;

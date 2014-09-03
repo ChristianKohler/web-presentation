@@ -6,6 +6,7 @@ var paths = {
   sourcefiles : [
   './src/web-presentation.html',
   './src/web-slide.html',
+  './src/web-slide-title.html',
   './src/web-presentation-keyboardcontrols.html']
 };
 
