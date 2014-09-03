@@ -1,4 +1,14 @@
-# web-presentation
+web-presentation
+========
+
+### A presentation framework created with web components
+
+* Lightweight
+* No dependencies
+* Modular
+* Extendable
+
+
 
 ## Getting Started
 
