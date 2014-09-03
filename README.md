@@ -12,6 +12,10 @@ web-presentation
 
 ## Getting Started
 
+Get web-presentation via bower
+
+    bower install web-presentation
+
 Include the `dist/web-presentation.html` file in your project.
 
     <link rel="import" href="web-presentation.html">
