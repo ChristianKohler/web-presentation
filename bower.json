@@ -11,13 +11,13 @@
     "html5",
     "web components",
     "shadow dom",
-    "html templates"
+    "html templates",
     "custom elements",
     "presentation"
   ],
   "license": "MIT",
   "ignore": [
-    "demo"
+    "demo",
     "node_modules",
     "src",
     ".gitignore",
