@@ -32,26 +32,30 @@
   };
 
   presentationProto.createdCallback = presentationProtoCreatedCallback;
-  presentationProto.registerSlide = registerSlide;
-  presentationProto.previousSlide = previousSlide;
-  presentationProto.nextSlide = nextSlide;
+  presentationProto.registerSlide   = registerSlide;
+  presentationProto.previousSlide   = previousSlide;
+  presentationProto.nextSlide       = nextSlide;
+  presentationProto.goToSlide       = goToSlide;
 
   function presentationProtoCreatedCallback(){
+    // Create PresentationData
+    this.slideData = Object.create(PresentationData);
+
+    // Create ShadowDom
     var template = importDoc.querySelector('#template-web-presentation');
     var templateContent = document.importNode(template.content, true);
     this.createShadowRoot().appendChild(templateContent);
-    console.log("presentation created");
+
+    // Bind onhashchange
+    var that = this;
+    window.addEventListener("hashchange", function(){
+      that.goToSlide(getSlideNumberFromHash());
+    });
   }
 
   function registerSlide(slide) {
-    if(!this.slideData){
-      this.slideData = Object.create(PresentationData);
-      slide.showSlide(true);
-    }
-
     this.slideData.slides.push(slide);
-
-    console.log('slide ' + this.slideData.slides.length + ' registered');
+    this.slideData.activeSlide = getSlideNumberFromHash();
   }
 
   function previousSlide(){
@@ -62,7 +66,7 @@
     }
 
     activeSlide = activeSlide-1;
-    this.slideData.activeSlide = activeSlide;
+    this.goToSlide(activeSlide);
   }
 
   function nextSlide(){
@@ -73,10 +77,20 @@
     }
 
     activeSlide = activeSlide+1;
-    this.slideData.activeSlide = activeSlide;
+    this.goToSlide(activeSlide);
+  }
+
+  function goToSlide(number) {
+    this.slideData.activeSlide = number;
+    history.pushState(null, null, '#' + number);
+  }
+
+  function getSlideNumberFromHash() {
+    return parseInt(location.hash.replace("#", ""), 10) || 0;
   }
 
   document.registerElement('web-presentation', {prototype: presentationProto});
+
 </script>
 
 <template id="template-web-slide">
@@ -160,6 +174,10 @@
     :host {
       background: #6260C1;
       color: #FFF;
+    }
+
+    ::content h1 {
+      font-size: 4em;
     }
   </style>
 </template>
