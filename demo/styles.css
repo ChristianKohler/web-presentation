@@ -2,10 +2,6 @@ web-slide-title {
   font-family: 'Roboto Condensed', sans-serif;
 }
 
-web-slide-title {
-  background: linear-gradient(90deg, #6260C1 10%, #6260C1 90%);
-}
-
 web-slide-title h2 {
   margin: 0;
 }
