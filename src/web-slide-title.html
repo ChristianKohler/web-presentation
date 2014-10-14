@@ -6,24 +6,26 @@
     }
 
     ::content h1 {
-      font-size: 4em;
+      font-size: 3em;
     }
   </style>
 </template>
 
 <script>
-  var slideTitleProto = Object.create(slideProto),
-    importDoc = document.currentScript.ownerDocument;
+  (function(){
+    var slideTitleProto = Object.create(slideProto),
+      importDoc = document.currentScript.ownerDocument;
 
-  slideTitleProto.createdCallback = slideTitleProtoCreatedCallback;
+    slideTitleProto.createdCallback = slideTitleProtoCreatedCallback;
 
-  function slideTitleProtoCreatedCallback(){
-    slideProto.createdCallback.call(this);
+    function slideTitleProtoCreatedCallback(){
+      slideProto.createdCallback.call(this);
 
-    var template = importDoc.querySelector('#template-web-slide-title');
-    var templateContent = document.importNode(template.content, true);
-    this.shadowRoot.insertBefore(templateContent, this.shadowRoot.querySelector('#content'));
-  }
+      var template = importDoc.querySelector('#template-web-slide-title');
+      var templateContent = document.importNode(template.content, true);
+      this.shadowRoot.insertBefore(templateContent, this.shadowRoot.querySelector('#content'));
+    }
 
-  document.registerElement('web-slide-title', {prototype: slideTitleProto});
+    document.registerElement('web-slide-title', {prototype: slideTitleProto});
+  })();
 </script>

@@ -1,3 +1,5 @@
+
+
 <template id="template-web-slide">
   <style>
     :host {
@@ -49,27 +51,59 @@
 </template>
 
 <script>
-  var slideProto = Object.create(HTMLElement.prototype),
-    importDoc = document.currentScript.ownerDocument;
+  var slideProto = Object.create(HTMLElement.prototype);
 
-  slideProto.createdCallback = slideProtoCreatedCallback;
-  slideProto.showSlide = showSlide;
+  (function(){
+    var importDoc = document.currentScript.ownerDocument;
 
-  function slideProtoCreatedCallback(){
-    var template = importDoc.querySelector('#template-web-slide');
-    var templateContent = document.importNode(template.content, true);
-    this.createShadowRoot().appendChild(templateContent);
+    slideProto.createdCallback   = slideProtoCreatedCallback;
+    slideProto.attachedCallback  = slideProtoAttachedCallback;
+    slideProto.showSlide         = showSlide;
 
-    this.parentNode.registerSlide(this);
-  }
+    function slideProtoCreatedCallback(){
+      var template = importDoc.querySelector('#template-web-slide');
+      var templateContent = document.importNode(template.content, true);
+      this.createShadowRoot().appendChild(templateContent);
 
-  function showSlide(expression) {
-    if(expression) {
-      this.classList.add('active');
-    } else {
-      this.classList.remove('active');
+      this.parentNode.registerSlide(this);
     }
-  }
 
-  document.registerElement('web-slide', {prototype: slideProto});
+    function slideProtoAttachedCallback() {
+      var slide = this;
+
+      bind("resize", this, function(){
+        resize.call(this);
+      });
+
+      setTimeout(function(){
+        resize.call(slide);
+      });
+    }
+
+    function bind(eventName, presentation, callback) {
+      window.addEventListener(eventName, function(){
+        callback.call(presentation);
+      });
+    }
+
+    function showSlide(expression) {
+      if(expression) {
+        this.classList.add('active');
+      } else {
+        this.classList.remove('active');
+      }
+    }
+
+    function resize() {
+      var content       = this.shadowRoot.getElementById("content"),
+          widthContent  = content.offsetWidth,
+          heightContent = content.offsetHeight,
+          xScale        = this.offsetWidth / widthContent,
+          yScale        = this.offsetHeight / heightContent;
+
+      content.style.zoom = Math.min(xScale, yScale);
+    }
+
+    document.registerElement('web-slide', {prototype: slideProto});
+  })();
 </script>
