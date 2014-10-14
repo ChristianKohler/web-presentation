@@ -13,85 +13,93 @@
 </template>
 
 <script>
-  var presentationProto = Object.create(HTMLElement.prototype),
-  importDoc = document.currentScript.ownerDocument;
+  (function(){
+    var presentationProto = Object.create(HTMLElement.prototype),
+    importDoc = document.currentScript.ownerDocument;
 
-  PresentationData = {
-    slides: [],
-    _activeSlide: 0,
-    get slideCount() { return this.slides.length },
-    get activeSlideElement() { return this.slides[this._activeSlide]; },
-    get activeSlide() { return this._activeSlide; },
-    set activeSlide(value) {
-      this._activeSlide = value;
+    PresentationData = {
+      slides: [],
+      _activeSlide: 0,
+      get slideCount() { return this.slides.length },
+      get activeSlideElement() { return this.slides[this._activeSlide]; },
+      get activeSlide() { return this._activeSlide; },
+      set activeSlide(value) {
+        this._activeSlide = value;
 
-      this.slides.forEach(function(element, index) {
-        element.showSlide(index === value);
+        this.slides.forEach(function(element, index) {
+          element.showSlide(index === value);
+        });
+      }
+    };
+
+    presentationProto.createdCallback = presentationProtoCreatedCallback;
+    presentationProto.registerSlide   = registerSlide;
+    presentationProto.previousSlide   = previousSlide;
+    presentationProto.nextSlide       = nextSlide;
+    presentationProto.goToSlide       = goToSlide;
+
+    function presentationProtoCreatedCallback(){
+      // Create PresentationData
+      this.slideData = Object.create(PresentationData);
+
+      // Create ShadowDom
+      var template = importDoc.querySelector('#template-web-presentation');
+      var templateContent = document.importNode(template.content, true);
+      this.createShadowRoot().appendChild(templateContent);
+
+      // Bind onhashchange
+      bind("hashchange", this, function(){
+        this.goToSlide(getSlideNumberFromHash());
       });
     }
-  };
 
-  presentationProto.createdCallback = presentationProtoCreatedCallback;
-  presentationProto.registerSlide   = registerSlide;
-  presentationProto.previousSlide   = previousSlide;
-  presentationProto.nextSlide       = nextSlide;
-  presentationProto.goToSlide       = goToSlide;
-
-  function presentationProtoCreatedCallback(){
-    // Create PresentationData
-    this.slideData = Object.create(PresentationData);
-
-    // Create ShadowDom
-    var template = importDoc.querySelector('#template-web-presentation');
-    var templateContent = document.importNode(template.content, true);
-    this.createShadowRoot().appendChild(templateContent);
-
-    // Bind onhashchange
-    var that = this;
-    window.addEventListener("hashchange", function(){
-      that.goToSlide(getSlideNumberFromHash());
-    });
-  }
-
-  function registerSlide(slide) {
-    this.slideData.slides.push(slide);
-    this.slideData.activeSlide = getSlideNumberFromHash();
-  }
-
-  function previousSlide(){
-    var activeSlide = this.slideData.activeSlide;
-
-    if(activeSlide <= 0) {
-      return;
+    function bind(eventName, presentation, callback) {
+      window.addEventListener(eventName, function(){
+        callback.call(presentation);
+      });
     }
 
-    activeSlide = activeSlide-1;
-    this.goToSlide(activeSlide);
-  }
-
-  function nextSlide(){
-    var activeSlide = this.slideData.activeSlide;
-
-    if(activeSlide >= this.slideData.slideCount - 1) {
-      return;
+    function registerSlide(slide) {
+      this.slideData.slides.push(slide);
+      this.goToSlide(getSlideNumberFromHash());
     }
 
-    activeSlide = activeSlide+1;
-    this.goToSlide(activeSlide);
-  }
+    function previousSlide(){
+      var activeSlide = this.slideData.activeSlide;
 
-  function goToSlide(number) {
-    this.slideData.activeSlide = number;
-    history.pushState(null, null, '#' + number);
-  }
+      if(activeSlide <= 0) {
+        return;
+      }
 
-  function getSlideNumberFromHash() {
-    return parseInt(location.hash.replace("#", ""), 10) || 0;
-  }
+      activeSlide = activeSlide-1;
+      this.goToSlide(activeSlide);
+    }
 
-  document.registerElement('web-presentation', {prototype: presentationProto});
+    function nextSlide(){
+      var activeSlide = this.slideData.activeSlide;
 
+      if(activeSlide >= this.slideData.slideCount - 1) {
+        return;
+      }
+
+      activeSlide = activeSlide+1;
+      this.goToSlide(activeSlide);
+    }
+
+    function goToSlide(number) {
+      this.slideData.activeSlide = number;
+      history.pushState(null, null, '#' + number);
+    }
+
+    function getSlideNumberFromHash() {
+      return parseInt(location.hash.slice(1), 10) || 0;
+    }
+    
+    document.registerElement('web-presentation', {prototype: presentationProto});
+  })();
 </script>
+
+
 
 <template id="template-web-slide">
   <style>
@@ -144,29 +152,61 @@
 </template>
 
 <script>
-  var slideProto = Object.create(HTMLElement.prototype),
-    importDoc = document.currentScript.ownerDocument;
+  var slideProto = Object.create(HTMLElement.prototype);
 
-  slideProto.createdCallback = slideProtoCreatedCallback;
-  slideProto.showSlide = showSlide;
+  (function(){
+    var importDoc = document.currentScript.ownerDocument;
 
-  function slideProtoCreatedCallback(){
-    var template = importDoc.querySelector('#template-web-slide');
-    var templateContent = document.importNode(template.content, true);
-    this.createShadowRoot().appendChild(templateContent);
+    slideProto.createdCallback   = slideProtoCreatedCallback;
+    slideProto.attachedCallback  = slideProtoAttachedCallback;
+    slideProto.showSlide         = showSlide;
 
-    this.parentNode.registerSlide(this);
-  }
+    function slideProtoCreatedCallback(){
+      var template = importDoc.querySelector('#template-web-slide');
+      var templateContent = document.importNode(template.content, true);
+      this.createShadowRoot().appendChild(templateContent);
 
-  function showSlide(expression) {
-    if(expression) {
-      this.classList.add('active');
-    } else {
-      this.classList.remove('active');
+      this.parentNode.registerSlide(this);
     }
-  }
 
-  document.registerElement('web-slide', {prototype: slideProto});
+    function slideProtoAttachedCallback() {
+      var slide = this;
+
+      bind("resize", this, function(){
+        resize.call(this);
+      });
+
+      setTimeout(function(){
+        resize.call(slide);
+      });
+    }
+
+    function bind(eventName, presentation, callback) {
+      window.addEventListener(eventName, function(){
+        callback.call(presentation);
+      });
+    }
+
+    function showSlide(expression) {
+      if(expression) {
+        this.classList.add('active');
+      } else {
+        this.classList.remove('active');
+      }
+    }
+
+    function resize() {
+      var content       = this.shadowRoot.getElementById("content"),
+          widthContent  = content.offsetWidth,
+          heightContent = content.offsetHeight,
+          xScale        = this.offsetWidth / widthContent,
+          yScale        = this.offsetHeight / heightContent;
+
+      content.style.zoom = Math.min(xScale, yScale);
+    }
+
+    document.registerElement('web-slide', {prototype: slideProto});
+  })();
 </script>
 
 <template id="template-web-slide-title">
@@ -177,26 +217,28 @@
     }
 
     ::content h1 {
-      font-size: 4em;
+      font-size: 3em;
     }
   </style>
 </template>
 
 <script>
-  var slideTitleProto = Object.create(slideProto),
-    importDoc = document.currentScript.ownerDocument;
+  (function(){
+    var slideTitleProto = Object.create(slideProto),
+      importDoc = document.currentScript.ownerDocument;
 
-  slideTitleProto.createdCallback = slideTitleProtoCreatedCallback;
+    slideTitleProto.createdCallback = slideTitleProtoCreatedCallback;
 
-  function slideTitleProtoCreatedCallback(){
-    slideProto.createdCallback.call(this);
+    function slideTitleProtoCreatedCallback(){
+      slideProto.createdCallback.call(this);
 
-    var template = importDoc.querySelector('#template-web-slide-title');
-    var templateContent = document.importNode(template.content, true);
-    this.shadowRoot.insertBefore(templateContent, this.shadowRoot.querySelector('#content'));
-  }
+      var template = importDoc.querySelector('#template-web-slide-title');
+      var templateContent = document.importNode(template.content, true);
+      this.shadowRoot.insertBefore(templateContent, this.shadowRoot.querySelector('#content'));
+    }
 
-  document.registerElement('web-slide-title', {prototype: slideTitleProto});
+    document.registerElement('web-slide-title', {prototype: slideTitleProto});
+  })();
 </script>
 
 <script>
