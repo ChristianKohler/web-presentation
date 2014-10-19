@@ -13,3 +13,7 @@ web-slide::shadow div#content {
   text-align: initial;
   padding: 20px;
 }
+
+web-slide:nth-child(odd) {
+  background: #FF0;
+}
