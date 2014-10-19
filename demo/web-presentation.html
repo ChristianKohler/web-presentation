@@ -19,17 +19,10 @@
 
     PresentationData = {
       slides: [],
-      _activeSlide: 0,
+      activeSlide: 0,
       get slideCount() { return this.slides.length },
-      get activeSlideElement() { return this.slides[this._activeSlide]; },
-      get activeSlide() { return this._activeSlide; },
-      set activeSlide(value) {
-        this._activeSlide = value;
-
-        this.slides.forEach(function(element, index) {
-          element.showSlide(index === value);
-        });
-      }
+      get activeSlideElement() { return this.slides[this.activeSlide]; },
+      isAnimating: false,
     };
 
     presentationProto.createdCallback = presentationProtoCreatedCallback;
@@ -67,34 +60,45 @@
     function previousSlide(){
       var activeSlide = this.slideData.activeSlide;
 
-      if(activeSlide <= 0) {
-        return;
+      if(activeSlide > 0) {
+        slideToSlide.call(this, activeSlide-1);
       }
-
-      activeSlide = activeSlide-1;
-      this.goToSlide(activeSlide);
     }
 
     function nextSlide(){
       var activeSlide = this.slideData.activeSlide;
 
-      if(activeSlide >= this.slideData.slideCount - 1) {
+      if(activeSlide < this.slideData.slideCount - 1) {
+        slideToSlide.call(this, activeSlide+1);
+      }
+    }
+
+    function goToSlide(number, forward) {
+      var slideData = this.slideData;
+
+      if (slideData.slideCount <= number || slideData.isAnimating) {
         return;
       }
 
-      activeSlide = activeSlide+1;
-      this.goToSlide(activeSlide);
+      slideData.isAnimating = true;
+      Promise.all([
+        slideData.slides[slideData.activeSlide].hideSlide(forward),
+        slideData.slides[number].showSlide(forward)
+      ]).then(function(){
+        slideData.isAnimating = false;
+        slideData.activeSlide = number;
+        history.pushState(null, null, '#' + number);
+      });
     }
 
-    function goToSlide(number) {
-      this.slideData.activeSlide = number;
-      history.pushState(null, null, '#' + number);
+    function slideToSlide(number) {
+        this.goToSlide(number, this.slideData.activeSlide < number);
     }
 
     function getSlideNumberFromHash() {
       return parseInt(location.hash.slice(1), 10) || 0;
     }
-    
+
     document.registerElement('web-presentation', {prototype: presentationProto});
   })();
 </script>
@@ -139,10 +143,71 @@
       margin-top: -240px;
       margin-left: -320px;
       opacity: 0;
+
+      -webkit-backface-visibility: hidden;
+    	-moz-backface-visibility: hidden;
+    	backface-visibility: hidden;
+    	-webkit-transform: translate3d(0, 0, 0);
+    	-moz-transform: translate3d(0, 0, 0);
+    	transform: translate3d(0, 0, 0);
+    	-webkit-transform-style: preserve-3d;
+    	-moz-transform-style: preserve-3d;
+    	transform-style: preserve-3d;
     }
 
     :host(.active) div#content {
       opacity: 1;
+    }
+
+    :host(.on-top) {
+      z-index: 999;
+    }
+
+    :host(.easingLOut) {
+    	-webkit-animation: moveToLeft .7s ease-in-out both;
+    	animation: moveToLeft .7s ease-in-out both;
+    }
+    :host(.easingLIn) {
+    	-webkit-animation: moveFromRight .7s ease both;
+    	animation: moveFromRight .7s ease both;
+    }
+    :host(.easingROut) {
+      -webkit-animation: moveToRight .7s ease-in-out both;
+      animation: moveToRight .7s ease-in-out both;
+    }
+    :host(.easingRIn) {
+      -webkit-animation: moveFromLeft .7s ease both;
+      animation: moveFromLeft .7s ease both;
+    }
+
+    @-webkit-keyframes moveToLeft {
+    	from { }
+    	to { -webkit-transform: translateX(-100%); }
+    }
+    @keyframes moveToLeft {
+    	from { }
+    	to { -webkit-transform: translateX(-100%); transform: translateX(-100%); }
+    }
+    @-webkit-keyframes moveFromRight {
+    	from { -webkit-transform: translateX(100%); }
+    }
+    @keyframes moveFromRight {
+    	from { -webkit-transform: translateX(100%); transform: translateX(100%); }
+    }
+
+    @-webkit-keyframes moveToRight {
+      from { }
+      to { -webkit-transform: translateX(100%); }
+    }
+    @keyframes moveToRight {
+      from { }
+      to { -webkit-transform: translateX(100%); transform: translateX(100%); }
+    }
+    @-webkit-keyframes moveFromLeft {
+      from { -webkit-transform: translateX(-100%); }
+    }
+    @keyframes moveFromLeft {
+      from { -webkit-transform: translateX(-100%); transform: translateX(-100%); }
     }
   </style>
 
@@ -155,11 +220,19 @@
   var slideProto = Object.create(HTMLElement.prototype);
 
   (function(){
+    var transitions = {
+      "easing" : [["easingLOut", "easingLIn"], ["easingROut", "easingRIn"]]
+    };
+
+    var outClass = "on-top";
+    var transition = transitions.easing;
+    var activeClass = "active";
     var importDoc = document.currentScript.ownerDocument;
 
     slideProto.createdCallback   = slideProtoCreatedCallback;
     slideProto.attachedCallback  = slideProtoAttachedCallback;
     slideProto.showSlide         = showSlide;
+    slideProto.hideSlide         = hideSlide;
 
     function slideProtoCreatedCallback(){
       var template = importDoc.querySelector('#template-web-slide');
@@ -181,18 +254,57 @@
       });
     }
 
-    function bind(eventName, presentation, callback) {
+    function showSlide(forward) {
+      if(forward !== undefined) {
+        this.classList.add(activeClass);
+        this.classList.add(forward ? transition[0][1] : transition[1][1]);
+        this.addEventListener("webkitAnimationEnd", endAnimationOnNewSlide);
+        return promiseOnEvent("webkitAnimationEnd", this);
+      } else {
+        this.classList.add(activeClass);
+        return Promise.resolve("done");
+      }
+    }
+
+    function hideSlide(forward){
+      if (forward !== undefined) {
+        this.classList.add(forward ? transition[0][0] : transition[1][0]);
+        this.classList.add(outClass);
+        this.addEventListener("webkitAnimationEnd", endAnimationOnOldSlide);
+        return promiseOnEvent("webkitAnimationEnd", this);
+      } else {
+        this.classList.remove(activeClass);
+        return Promise.resolve("done");
+      }
+    }
+
+    function bind(eventName, slide, callback) {
       window.addEventListener(eventName, function(){
-        callback.call(presentation);
+        callback.call(slide);
       });
     }
 
-    function showSlide(expression) {
-      if(expression) {
-        this.classList.add('active');
-      } else {
-        this.classList.remove('active');
-      }
+    function promiseOnEvent(eventName, slide) {
+      return new Promise(function(resolve){
+        slide.addEventListener("webkitAnimationEnd", function(e){
+          slide.removeEventListener("webkitAnimationEnd", this);
+          resolve(slide);
+        });
+      });
+    }
+
+    function endAnimationOnOldSlide() {
+      this.removeEventListener("webkitAnimationEnd", endAnimationOnOldSlide);
+      this.classList.remove(activeClass);
+      this.classList.remove(transition[0][0]);
+      this.classList.remove(transition[1][0]);
+      this.classList.remove(outClass);
+    }
+
+    function endAnimationOnNewSlide() {
+      this.removeEventListener("webkitAnimationEnd", endAnimationOnNewSlide);
+      this.classList.remove(transition[0][1]);
+      this.classList.remove(transition[1][1]);
     }
 
     function resize() {
