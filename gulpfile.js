@@ -36,4 +36,10 @@ gulp.task('minor', function(){
   .pipe(gulp.dest('./'));
 });
 
+gulp.task('patch', function(){
+  gulp.src('./bower.json')
+      .pipe(bump({type:'patch'}))
+      .pipe(gulp.dest('./'));
+});
+
 gulp.task('default', ['watch', 'webserver']);
