@@ -59,51 +59,19 @@
       z-index: 999;
     }
 
-    :host(.easingLOut) {
-    	-webkit-animation: moveToLeft .7s ease-in-out both;
-    	animation: moveToLeft .7s ease-in-out both;
-    }
-    :host(.easingLIn) {
-    	-webkit-animation: moveFromRight .7s ease both;
-    	animation: moveFromRight .7s ease both;
-    }
-    :host(.easingROut) {
-      -webkit-animation: moveToRight .7s ease-in-out both;
-      animation: moveToRight .7s ease-in-out both;
-    }
-    :host(.easingRIn) {
-      -webkit-animation: moveFromLeft .7s ease both;
-      animation: moveFromLeft .7s ease both;
+    :host(.forward-out),
+    :host(.forward-in),
+    :host(.backwards-out),
+    :host(.backwards-in) {
+      -webkit-animation: defaultTransition .007s ease both;
+      animation: defaultTransition .007s ease both;
     }
 
-    @-webkit-keyframes moveToLeft {
-    	from { }
-    	to { -webkit-transform: translateX(-100%); }
+    @-webkit-keyframes defaultTransition {
+      from { -webkit-transform: translateX(0); }
     }
-    @keyframes moveToLeft {
-    	from { }
-    	to { -webkit-transform: translateX(-100%); transform: translateX(-100%); }
-    }
-    @-webkit-keyframes moveFromRight {
-    	from { -webkit-transform: translateX(100%); }
-    }
-    @keyframes moveFromRight {
-    	from { -webkit-transform: translateX(100%); transform: translateX(100%); }
-    }
-
-    @-webkit-keyframes moveToRight {
-      from { }
-      to { -webkit-transform: translateX(100%); }
-    }
-    @keyframes moveToRight {
-      from { }
-      to { -webkit-transform: translateX(100%); transform: translateX(100%); }
-    }
-    @-webkit-keyframes moveFromLeft {
-      from { -webkit-transform: translateX(-100%); }
-    }
-    @keyframes moveFromLeft {
-      from { -webkit-transform: translateX(-100%); transform: translateX(-100%); }
+    @keyframes defaultTransition {
+      from { -webkit-transform: translateX(0); transform: translateX(0); }
     }
   </style>
 
@@ -116,12 +84,17 @@
   var slideProto = Object.create(HTMLElement.prototype);
 
   (function(){
-    var transitions = {
-      "easing" : [["easingLOut", "easingLIn"], ["easingROut", "easingRIn"]]
+    var transition = {
+      "forward" : {
+        "out":  "forward-out",
+        "in":   "forward-in"
+      },
+      "backwards" : {
+        "out":  "backwards-out",
+        "in":   "backwards-in"
+      }
     };
-
     var outClass = "on-top";
-    var transition = transitions.easing;
     var activeClass = "active";
     var importDoc = document.currentScript.ownerDocument;
 
@@ -147,13 +120,13 @@
 
       setTimeout(function(){
         resize.call(slide);
-      });
+      }, 0);
     }
 
     function showSlide(forward) {
       if(forward !== undefined) {
         this.classList.add(activeClass);
-        this.classList.add(forward ? transition[0][1] : transition[1][1]);
+        this.classList.add(forward ? transition.forward.in : transition.backwards.in);
         this.addEventListener("webkitAnimationEnd", endAnimationOnNewSlide);
         return promiseOnEvent("webkitAnimationEnd", this);
       } else {
@@ -164,7 +137,7 @@
 
     function hideSlide(forward){
       if (forward !== undefined) {
-        this.classList.add(forward ? transition[0][0] : transition[1][0]);
+        this.classList.add(forward ? transition.forward.out : transition.backwards.out);
         this.classList.add(outClass);
         this.addEventListener("webkitAnimationEnd", endAnimationOnOldSlide);
         return promiseOnEvent("webkitAnimationEnd", this);
@@ -192,15 +165,15 @@
     function endAnimationOnOldSlide() {
       this.removeEventListener("webkitAnimationEnd", endAnimationOnOldSlide);
       this.classList.remove(activeClass);
-      this.classList.remove(transition[0][0]);
-      this.classList.remove(transition[1][0]);
+      this.classList.remove(transition.forward.out);
+      this.classList.remove(transition.backwards.out);
       this.classList.remove(outClass);
     }
 
     function endAnimationOnNewSlide() {
       this.removeEventListener("webkitAnimationEnd", endAnimationOnNewSlide);
-      this.classList.remove(transition[0][1]);
-      this.classList.remove(transition[1][1]);
+      this.classList.remove(transition.forward.in);
+      this.classList.remove(transition.backwards.in);
     }
 
     function resize() {
