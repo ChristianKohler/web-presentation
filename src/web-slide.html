@@ -113,15 +113,8 @@
     }
 
     function slideProtoAttachedCallback() {
-      var slide = this;
-
-      bind("resize", this, function(){
-        resize.call(this);
-      });
-
-      setTimeout(function(){
-        resize.call(slide);
-      }, 0);
+      window.addEventListener("resize", resize.bind(this), false);
+      setTimeout(resize.bind(this), 0);
     }
 
     function showSlide(forward) {
@@ -146,12 +139,6 @@
         this.classList.remove(activeClass);
         return Promise.resolve("done");
       }
-    }
-
-    function bind(eventName, slide, callback) {
-      window.addEventListener(eventName, function(){
-        callback.call(slide);
-      });
     }
 
     function promiseOnEvent(eventName, slide) {

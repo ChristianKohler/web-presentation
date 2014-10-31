@@ -22,7 +22,7 @@
       activeSlide: 0,
       get slideCount() { return this.slides.length },
       get activeSlideElement() { return this.slides[this.activeSlide]; },
-      isAnimating: false,
+      isAnimating: false
     };
 
     presentationProto.createdCallback = presentationProtoCreatedCallback;
@@ -41,15 +41,9 @@
       this.createShadowRoot().appendChild(templateContent);
 
       // Bind onhashchange
-      bind("hashchange", this, function(){
+      window.addEventListener("hashchange", function(){
         this.goToSlide(getSlideNumberFromHash());
-      });
-    }
-
-    function bind(eventName, presentation, callback) {
-      window.addEventListener(eventName, function(){
-        callback.call(presentation);
-      });
+      }.bind(this));
     }
 
     function registerSlide(slide) {
@@ -80,6 +74,7 @@
         return;
       }
 
+      // Animate
       slideData.isAnimating = true;
       Promise.all([
         slideData.slides[slideData.activeSlide].hideSlide(forward),
