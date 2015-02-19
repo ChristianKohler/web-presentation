@@ -8,6 +8,8 @@ web-presentation
 * Modular
 * Extendable
 
+## Example
+http://christiankohler.github.io/web-presentation/
 
 
 ## Getting Started
