@@ -1,0 +1,16 @@
+@import "keyframes";
+
+web-slide, web-slide-title {
+  &[data-transition="moveFromBottom"] {
+    $time: 0.5s;
+
+    &.forward-out {
+      -webkit-animation: moveToTop $time ease-in-out both;
+      animation: moveToTop $time ease-in-out both;
+    }
+    & +.forward-in {
+      -webkit-animation: moveFromBottom $time ease-in-out both;
+      animation: moveFromBottom $time ease-in-out both;
+    }
+  }
+}

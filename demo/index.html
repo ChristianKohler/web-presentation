@@ -3,20 +3,76 @@
 <head>
   <meta charset="UTF-8">
   <title>web-presentation demo</title>
-  <!-- <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet' type='text/css'> -->
-  <link rel="stylesheet" href="styles.css" media="screen" title="no title" charset="utf-8">
+  <link rel="stylesheet" href="styles.css" media="screen" charset="utf-8">
+  <link rel="stylesheet" href="transitions.css" media="screen" charset="utf-8">
   <link rel="import" href="web-presentation.html">
+  <link rel='import' href='https://cdn.rawgit.com/ChristianKohler/PrismComponents/master/dist/prism-components.html'>
 </head>
 <body>
   <web-presentation>
     <web-presentation-keyboardcontrols></web-presentation-keyboardcontrols>
-    <web-slide-title>
-      <h1>Pure Webcomponents Presentation Framework</h1>
-      <h2>web-presentation</h2>
+
+    <web-slide-title data-transition="moveFromBottom">
+      <h1>&lt;&nbsp;web-presentation&nbsp;&gt;</h1>
+      <h2>Pure Webcomponents Presentation Framework</h2>
+      <p><small>Press Space to continue</small></p>
     </web-slide-title>
-    <web-slide>
-      <h1>Native, fast, extendable</h1>
-      <h2>..and only one file to import</h2>
+
+    <web-slide data-transition="moveToLeft">
+      <h1>What is web-presentation?</h1>
+      <h2>A fast an simple way to build html presentations!</h2>
+      <p><b>web-presentation</b> is a set of webcomponents which let you create html presentations in a natural way. If you know HTML, you know web-presentation.</p>
+      <h2>Basic example with one slides</h2>
+      <pre is="lang-markup" theme="dark">
+&lt;web-presentation&gt;
+  &lt;web-slide&gt;
+    &lt;h1&gt;hello world&lt;/h1&gt;
+  &lt;/web-slide&gt;
+&lt;/web-presentation&gt;
+      </pre>
     </web-slide>
+
+    <web-slide data-transition="moveToLeft">
+      <h1>Features</h1>
+      <h2>Fast</h2>
+      <p>Web components are native</p>
+      <h2>No 3rd party dependencies</h2>
+      <p>Written in pure javascript</p>
+      <h2>Extendable and customizable</h2>
+      <p>Thanks to a modular architecture. The keyboard controls for example are not part of the core.</p>
+      <p>You can customize web-presentation tags like you would with any other html tag.</p>
+    </web-slide>
+
+
+    <web-slide data-transition="fall">
+      <h1>Getting started</h1>
+      <h2>Link one file and start creating your presentation</h2>
+      <p>To get started just include web-presentation.html in your header.</p>
+      <p>Use the web-presentation and web-slide tags to build your slide.</p>
+      <pre is="lang-markup" theme="dark">
+  &lt;link rel="import" href="web-presentation.html"&gt;
+      </pre>
+    </web-slide>
+
+    <web-slide data-transition="newspaper">
+      <h1>Transitions</h1>
+      <p>
+        web-presentation comes with great transitions out of the box.
+      </p>
+      <h2>Usage</h2>
+      <p>
+        Just set the transition attribute on a slide
+      </p>
+      <pre is="lang-markup" theme="dark">
+  &lt;web-slide data-transition="moveToLeft"&gt;
+      </pre>
+    </web-slide>
+
+    <web-slide>
+      <h1>Let's get started.</h1>
+      <a href="https://github.com/ChristianKohler/web-presentation">https://github.com/ChristianKohler/web-presentation</a>
+    </web-slide>
+
+  </web-presentation>
 </body>
 </html>

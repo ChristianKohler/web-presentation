@@ -1,0 +1,16 @@
+@import "keyframes";
+
+web-slide, web-slide-title {
+  &[data-transition="newspaper"] {
+    $time: 0.5s;
+
+    &.forward-out {
+    }
+    & +.forward-in {
+      -webkit-transform-origin: 50% 50%;
+      transform-origin: 50% 50%;
+      -webkit-animation: rotateInNewspaper $time both ease-out ;
+      animation: rotateInNewspaper $time both ease-out;
+    }
+  }
+}

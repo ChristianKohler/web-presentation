@@ -38,9 +38,42 @@ Use the web slide component in your html file.
 </web-presentation>
 ```
 
+## API
+
+### Components
+
+|Component|Description|
+|:--------|:----------|
+|`web-presentation`|The presentation element which contains all slides|
+|`web-slide`|The slide element has to be within a web-presentation element|
+|`web-slide-title`|The title is the same element as web-slide. The idea is to make it easier to style all title slide|
+|`web-presentation-keyboardcontrols`|One way to control the presentation. Use left and right arrow keys or space to go to the next slide|
+
+### Transitions
+Usage:
+
+```html
+  <web-slide-title data-transition="fall">
+```
+
+Available transitions:
+* fall
+* moveFromTop
+* moveToLeft
+* moveFromBottom
+
+If you want to add a transitions to this library please make a pull-request.
+
 ## Run local demo
 * Install local dev dependencies: `npm install`
 * Run gulp `gulp`
 
 ## Requirements
-Use Chrome 36 to use web-presentation without a polyfill.
+Use Chrome 36 or higher to use web-presentation without a polyfill.
+
+## Contribute
+Help make web-presentation better.
+
+* Install local dev dependencies: `npm install`
+* Run gulp watch task: `gulp`
+* Edit src files

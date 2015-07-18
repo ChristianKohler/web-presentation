@@ -1,0 +1,14 @@
+@import "keyframes";
+
+web-slide, web-slide-title {
+  &[data-transition="moveToLeft"] {
+    &.forward-out {
+      -webkit-animation: moveToLeft .7s ease-in-out both;
+      animation: moveToLeft .7s ease-in-out both;
+    }
+    & +.forward-in {
+      -webkit-animation: moveFromRight .7s ease both;
+      animation: moveFromRight .7s ease both;
+    }
+  }
+}

@@ -1,0 +1,14 @@
+@import "keyframes";
+
+web-slide, web-slide-title {
+  &[data-transition="fall"] {
+    $time: 1s;
+
+    &.forward-out {
+      -webkit-transform-origin: 0% 0%;
+      transform-origin: 0% 0%;
+      -webkit-animation: rotateFall 1s both ease-in;
+      animation: rotateFall 1s both ease-in;
+    }
+  }
+}
