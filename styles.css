@@ -1,39 +1,23 @@
 web-slide-title {
-  font-family: 'Roboto Condensed', sans-serif;
+  font-family: sans-serif;
 }
 
-web-slide-title h2 {
-  margin: 0;
-}
+web-slide-title h1 { color: rgba(0,0,0,0.5); }
+web-slide-title h2 { color: rgba(0,0,0,0.3); margin: 0; }
 
-web-slide-title::shadow div#content,
-web-slide::shadow div#content {
+web-slide h1 { color: rgba(0,0,0,0.5); margin-bottom: 0; }
+web-slide h2 { color: rgba(0,0,0,0.3); margin-bottom: 0; }
+web-slide p { color: rgba(0,0,0,0.7 ); margin: 5px 0; }
+
+web-slide:not(:last-child)::shadow div#content {
   justify-content: initial;
   align-items: initial;
   text-align: initial;
   padding: 20px;
 }
 
-/* Animation Example */
-web-slide-title.forward-out {
-  -webkit-animation: moveToLeft .7s ease-in-out both;
-  animation: moveToLeft .7s ease-in-out both;
-}
-web-slide-title +.forward-in {
-  -webkit-animation: moveFromRight .7s ease both;
-  animation: moveFromRight .7s ease both;
-}
-@-webkit-keyframes moveToLeft {
-  from { }
-  to { -webkit-transform: translateX(-100%); }
-}
-@keyframes moveToLeft {
-  from { }
-  to { -webkit-transform: translateX(-100%); transform: translateX(-100%); }
-}
-@-webkit-keyframes moveFromRight {
-  from { -webkit-transform: translateX(100%); }
-}
-@keyframes moveFromRight {
-  from { -webkit-transform: translateX(100%); transform: translateX(100%); }
-}
+web-slide:nth-of-type(1) { background: #fafafa; }
+web-slide:nth-of-type(2) { background: #fdc162; }
+web-slide:nth-of-type(3) { background: #60d7a9; }
+web-slide:nth-of-type(4) { background: #7bb7fa; }
+web-slide:nth-of-type(5) { background: #0ac2d2; }
