@@ -62,6 +62,7 @@ Available transitions:
 * moveFromTop
 * moveToLeft
 * moveFromBottom
+* newspaper
 
 If you want to add a transitions to this library please make a pull-request.
 
