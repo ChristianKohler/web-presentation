@@ -83,7 +83,17 @@
         slideData.isAnimating = false;
         slideData.activeSlide = number;
         history.pushState(null, null, '#' + number);
+        dispatchSlideChangedEvent.call(this);
+      }.bind(this));
+    }
+
+    function dispatchSlideChangedEvent() {
+      var total = this.slideData.slides.length;
+      var current = this.slideData.activeSlide;
+      var event = new CustomEvent('SlideChanged', {
+        'detail': { total: total, current: current }
       });
+      this.dispatchEvent(event);
     }
 
     function slideToSlide(number) {
@@ -332,4 +342,47 @@
   }
 
   document.registerElement('web-presentation-keyboardcontrols', {prototype: keyboardControlsProto});
+</script>
+
+<template id="template-web-presentation-progress">
+  <style>
+    :host {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+    }
+
+    #progress {
+      width: 10%;
+      height: 100%;
+      background: rgba(70,255,140,0.9);
+      transition: width 0.5s;
+    }
+  </style>
+  <div id="progress"></div>
+</template>
+<script>
+  var progressProto = Object.create(HTMLElement.prototype);
+  var importDoc = document.currentScript.ownerDocument;
+
+  progressProto.createdCallback = progressProtoCreatedCallback;
+
+  function progressProtoCreatedCallback() {
+    var template = importDoc.querySelector('#template-web-presentation-progress');
+    var templateContent = document.importNode(template.content, true);
+    this.createShadowRoot().appendChild(templateContent);
+
+    this.parentNode.addEventListener('SlideChanged', updateProgress.bind(this), false);
+  }
+
+  function updateProgress(e) {
+    var percentage = e.detail.current / (e.detail.total-1) * 100;
+    this.shadowRoot.getElementById("progress").style.width = percentage + "%";
+  }
+
+  document.registerElement('web-presentation-progress', {prototype: progressProto});
 </script>

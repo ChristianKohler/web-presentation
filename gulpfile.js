@@ -9,7 +9,8 @@ var paths = {
     './src/web-presentation.html',
     './src/web-slide.html',
     './src/web-slide-title.html',
-    './src/web-presentation-keyboardcontrols.html'],
+    './src/web-presentation-keyboardcontrols.html',
+    './src/web-presentation-progress.html'],
   transitionsSrc: './src/transitions/**/*.scss',
   transitionsFile: './src/transitions/transitions.scss'
 };

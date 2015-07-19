@@ -83,7 +83,17 @@
         slideData.isAnimating = false;
         slideData.activeSlide = number;
         history.pushState(null, null, '#' + number);
+        dispatchSlideChangedEvent.call(this);
+      }.bind(this));
+    }
+
+    function dispatchSlideChangedEvent() {
+      var total = this.slideData.slides.length;
+      var current = this.slideData.activeSlide;
+      var event = new CustomEvent('SlideChanged', {
+        'detail': { total: total, current: current }
       });
+      this.dispatchEvent(event);
     }
 
     function slideToSlide(number) {
