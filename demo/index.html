@@ -47,11 +47,20 @@
     <web-slide data-transition="moveToLeft">
       <h1>Fragments</h1>
       <h2>Step by step</h2>
-      <ul>
-        <li data-fragment="1">One</li>
-        <li data-fragment="3">Three</li>
-        <li data-fragment="2">Two</li>
-      </ul>
+      <p>
+        <span data-fragment="1">Fragments are a very easy way</span>
+        <span data-fragment="2">to display parts of a slide</span>
+        <span data-fragment="3">step by step.</span></p>
+      <pre is="lang-markup" theme="dark">
+&lt;span data-fragment="3"&gt;Fragments are a very easy way&lt;span&gt;
+&lt;span data-fragment="2"&gt;to display parts of a slide&lt;span&gt;
+&lt;span data-fragment="1"&gt;step by step.&lt;span&gt;
+      </pre>
+      <div data-fragment="99">
+        <pre is="lang-markup" theme="dark">
+&lt;h1 data-fragment="99"&gt;Great!!&lt;h1&gt;
+        </pre>
+      </div>
     </web-slide>
 
     <web-slide data-transition="fall">
