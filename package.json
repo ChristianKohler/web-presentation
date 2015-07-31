@@ -14,7 +14,7 @@
     "gulp-webserver": "^0.7.1"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "ghpages": "git subtree push --prefix demo origin gh-pages"
   },
   "repository": {
     "type": "git",
