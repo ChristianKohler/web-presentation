@@ -1,6 +1,6 @@
 {
   "name": "web-presentation",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Pure Web Components Presentation Framework",
   "main": "index.js",
   "dependencies": {
