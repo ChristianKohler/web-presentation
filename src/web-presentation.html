@@ -55,7 +55,9 @@
     }
     
     function prevStep() {
-      this.previousSlide();
+      if(this.slideData.activeSlideElement && !this.slideData.activeSlideElement.previousFragment()) {
+        this.previousSlide();  
+      }
     }
     
     function registerSlide(slide) {

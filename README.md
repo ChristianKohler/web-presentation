@@ -79,14 +79,31 @@ If you want to add a transitions to this library please make a pull-request.
 ### Fragments
 Show parts of a slide step by step.
 
-Usage:
+Show:
 
 ```html
   <ul>
-    <li data-fragment="1">First</li>
-    <li data-fragment="99">Last</li>
-    <li data-fragment="2">Second</li>
+    <li data-enter="1">First</li>
+    <li data-enter="99">Last</li>
+    <li data-enter="2">Second</li>
   </ul>
+```
+
+Hide: 
+
+```html
+  <div data-hide="1">Hide me</div>
+```
+
+Mixed:
+
+```html
+  <!-- step1:shows p1 / step2:shows p2 / step3:hides div1 and shows div2-->
+  <div id="div1" data-hide="10">
+    <p data-show="1">Show first</p>
+    <p data-show="2">Show second</p>
+  </div>
+  <div id="div2" data-show="10">Show after</div>
 ```
 
 ## Run local demo

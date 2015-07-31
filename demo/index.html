@@ -47,18 +47,24 @@
     <web-slide data-transition="moveToLeft">
       <h1>Fragments</h1>
       <h2>Step by step</h2>
-      <p>
-        <span data-fragment="1">Fragments are a very easy way</span>
-        <span data-fragment="2">to display parts of a slide</span>
-        <span data-fragment="3">step by step.</span></p>
-      <pre is="lang-markup" theme="dark">
-&lt;span data-fragment="3"&gt;Fragments are a very easy way&lt;span&gt;
-&lt;span data-fragment="2"&gt;to display parts of a slide&lt;span&gt;
-&lt;span data-fragment="1"&gt;step by step.&lt;span&gt;
-      </pre>
-      <div data-fragment="99">
-        <pre is="lang-markup" theme="dark">
-&lt;h1 data-fragment="99"&gt;Great!!&lt;h1&gt;
+      <div>
+        <p>
+          <span data-enter="1">Fragments are a very easy way</span>
+          <span data-enter="2">to display parts</span>
+          <span data-enter="2">of a slide</span>
+          <span data-enter="3">step by step.</span></p>
+          <pre data-enter="4" is="lang-markup" theme="dark">
+&lt;span data-enter="1"&gt;Fragments are a very easy way&lt;span&gt;
+&lt;span data-enter="2"&gt;to display parts&lt;span&gt;
+&lt;span data-enter="2"&gt;of a slide&lt;span&gt;
+&lt;span data-enter="3"&gt;step by step.&lt;span&gt;
+          </pre>
+      </div>
+      
+      <div data-enter="5">
+        <p>..or to hide</p>
+        <pre data-exit="11" is="lang-markup" theme="dark">
+&lt;h1 data-exit="10"&gt;Great!!&lt;h1&gt;
         </pre>
       </div>
     </web-slide>
