@@ -11,6 +11,12 @@ web-presentation
 ## Example
 http://christiankohler.github.io/web-presentation/
 
+## Plunks
+Try web-presentation ..
+
+http://plnkr.co/edit/uU2lbg?p=preview
+
+http://plnkr.co/edit/rTH17v?p=preview
 
 ## Getting Started
 
