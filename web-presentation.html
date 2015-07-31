@@ -55,7 +55,9 @@
     }
     
     function prevStep() {
-      this.previousSlide();
+      if(this.slideData.activeSlideElement && !this.slideData.activeSlideElement.previousFragment()) {
+        this.previousSlide();  
+      }
     }
     
     function registerSlide(slide) {
@@ -189,10 +191,6 @@
       -webkit-animation: defaultTransition .007s ease both;
       animation: defaultTransition .007s ease both;
     }
-    
-    ::content [data-fragment] {
-      visibility: hidden;
-    }
 
     @-webkit-keyframes defaultTransition {
       from { -webkit-transform: translateX(0); }
@@ -231,6 +229,7 @@
     slideProto.showSlide         = showSlide;
     slideProto.hideSlide         = hideSlide;
     slideProto.nextFragment      = nextFragment;
+    slideProto.previousFragment  = previousFragment;
 
     function slideProtoCreatedCallback(){  
       var templateContent = document.importNode(template.content, true);
@@ -308,57 +307,115 @@
     }
 
     /**
-     * Sets fragments and sets currentFragment to 0
+     * Sets fragmentGroups and sets currentFragment to 0
      */
     function initFragments() {
-      if(this.fragments) {
-        this.fragments.forEach(hideFragment);  
+      if(this.fragmentGroups) {
+        this.fragmentGroups.forEach(resetFragementGroup);  
       } else {
-        this.fragments = getFragments.call(this);
+        this.fragmentGroups = getFragmentGroups.call(this);
       }
       
       this.currentFragment = 0;
     }
-
-    /**
-     * Searches for elements with the data-fragment="1" tag and sorts them
-     */
-    function getFragments() {
-      var fragments = [].slice.call(this.querySelectorAll('[data-fragment]'));
-      
-      return fragments.sort(function(fragmentA, fragmentB) {
-        var a = fragmentA.getAttribute('data-fragment');
-        var b = fragmentB.getAttribute('data-fragment');
-        
-        if (a > b) {
-          return 1;
-        }
-        if (a < b) {
-          return -1;
-        }
-        return 0;
-      });
-    }
-  
-    function showFragment(fragment) {
-      fragment.style.visibility = 'visible';
-    }
     
-    function hideFragment(fragment) {
-      fragment.style.visibility = 'hidden';
-    }
-
     function nextFragment() {
-      if(this.fragments.length === this.currentFragment) {
+      if(this.fragmentGroups.length === this.currentFragment) {
         return false;
       }
       
-      showFragment(this.fragments[this.currentFragment]);
+      executeFragmentGroup(this.fragmentGroups[this.currentFragment]);
       this.currentFragment = this.currentFragment + 1;
       
       return true;
     }
-
+    
+    function previousFragment() {
+      if(this.currentFragment === 0 || this.currentFragment + 1 >= this.fragmentGroups.length) {  
+        return false;
+      }
+      
+      this.currentFragment = this.currentFragment - 1;
+      resetFragementGroup(this.fragmentGroups[this.currentFragment])
+      
+      return true;
+    }
+    
+    /**
+     * Searches for elements with the data-fragment="1" tag and sorts them
+     */
+    function getFragmentGroups() {
+      var fragmentsEnter = [].slice.call(this.querySelectorAll('[data-enter]')).map(createEnterFragment);
+      var fragmentsExit = [].slice.call(this.querySelectorAll('[data-exit]')).map(createExitFragment);
+      
+      return fragmentsEnter
+        .concat(fragmentsExit)
+        .sort(sortFragments)
+        .reduce(groupFragments, []);
+      
+      function createEnterFragment(fragment) {
+        return { 
+            'type': 'enter',
+            'index': parseInt(fragment.getAttribute('data-enter'), 10),
+            'elem': fragment
+          };
+      }
+      function createExitFragment(fragment) {
+        return { 
+            'type': 'exit',
+            'index': parseInt(fragment.getAttribute('data-exit'), 10),
+            'elem': fragment
+          };
+      }
+      function sortFragments(fragmentA, fragmentB) {
+        if (fragmentA.index > fragmentB.index) {
+          return 1;
+        }
+        if (fragmentA.index < fragmentB.index) {
+          return -1;
+        }
+        return 0;
+      }
+      function groupFragments(groups, fragment) {
+       var group = groups.filter(function(f){ return f.index === fragment.index });
+       if(group.length > 0) {
+         var groupIndex = groups.indexOf(group[0]);
+         groups[groupIndex].fragments.push(fragment);
+       } else {
+         groups.push({ index: fragment.index, fragments: [fragment] });
+       }
+       return groups;
+      }
+    }
+  
+    function resetFragementGroup(fragmentGroup) {
+      fragmentGroup.fragments
+        .filter(function(fragment) { return fragment.type === "enter"; })
+        .forEach(function(enterFragment) { hideFragment(enterFragment); });
+      
+      fragmentGroup.fragments
+        .filter(function(fragment) { return fragment.type === "exit"; })
+        .forEach(function(exitFragment) { showFragment(exitFragment); });
+    }
+  
+    function executeFragmentGroup(fragmentGroup) {
+      fragmentGroup.fragments
+        .filter(function(fragment) { return fragment.type === "enter"; })
+        .forEach(function(enterFragment) { showFragment(enterFragment); });
+      
+      fragmentGroup.fragments
+        .filter(function(fragment) { return fragment.type === "exit"; })
+        .forEach(function(exitFragment) { hideFragment(exitFragment); });
+    }
+  
+    function showFragment(fragment) {
+      fragment.elem.style.visibility = '';
+    }
+    
+    function hideFragment(fragment) {
+      fragment.elem.style.visibility = 'hidden';
+    }
+    
     document.registerElement('web-slide', {prototype: slideProto});
   })();
 </script>
