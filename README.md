@@ -11,8 +11,18 @@ web-presentation
 ## Example
 http://christiankohler.github.io/web-presentation/
 
+## Plunks
+Try web-presentation ..
+
+http://plnkr.co/edit/uU2lbg?p=preview
+
+http://plnkr.co/edit/rTH17v?p=preview
 
 ## Getting Started
+
+Install web-presentation with npm
+
+    npm i web-presentation
 
 Get web-presentation via bower
 
@@ -65,6 +75,19 @@ Available transitions:
 * newspaper
 
 If you want to add a transitions to this library please make a pull-request.
+
+### Fragments
+Show parts of a slide step by step.
+
+Usage:
+
+```html
+  <ul>
+    <li data-fragment="1">First</li>
+    <li data-fragment="99">Last</li>
+    <li data-fragment="2">Second</li>
+  </ul>
+```
 
 ## Run local demo
 * Install local dev dependencies: `npm install`
