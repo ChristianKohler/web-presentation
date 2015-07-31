@@ -30,6 +30,8 @@
     presentationProto.previousSlide   = previousSlide;
     presentationProto.nextSlide       = nextSlide;
     presentationProto.goToSlide       = goToSlide;
+    presentationProto.nextStep        = nextStep;
+    presentationProto.prevStep        = prevStep;
 
     function presentationProtoCreatedCallback(){
       // Create PresentationData
@@ -45,7 +47,17 @@
         this.goToSlide(getSlideNumberFromHash());
       }.bind(this));
     }
-
+    
+    function nextStep() {
+      if(this.slideData.activeSlideElement && !this.slideData.activeSlideElement.nextFragment()) {
+        this.nextSlide();  
+      }
+    }
+    
+    function prevStep() {
+      this.previousSlide();
+    }
+    
     function registerSlide(slide) {
       this.slideData.slides.push(slide);
       this.goToSlide(getSlideNumberFromHash());
