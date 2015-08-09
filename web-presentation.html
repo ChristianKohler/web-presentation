@@ -307,113 +307,103 @@
     }
 
     /**
-     * Sets fragmentGroups and sets currentFragment to 0
+     * Fragment
      */
-    function initFragments() {
-      if(this.fragmentGroups) {
-        this.fragmentGroups.forEach(resetFragementGroup);  
-      } else {
-        this.fragmentGroups = getFragmentGroups.call(this);
+    function Fragment(element){
+      var indexEnter = element.getAttribute('data-enter');
+      var indexExit = element.getAttribute('data-exit');
+      
+      this.enter = indexEnter ? parseInt(indexEnter, 10) : undefined;
+      this.exit = indexExit ? parseInt(indexExit, 10) : undefined;
+      this.elem = element;
+      
+      if(!this.exit || this.enter < this.exit) {
+        this.hide();
+      }
+    }
+    
+    Fragment.prototype.show = function() {
+      this.elem.style.visibility = '';
+    };
+    
+    Fragment.prototype.hide = function() {
+      this.elem.style.visibility = 'hidden';
+    };
+
+    /**
+     * FragmentsController
+     */
+     function FragmentsController(root) {
+      this.fragments = [].slice
+        .call(root.querySelectorAll('[data-enter], [data-exit]'))
+        .map(function(element){
+          return new Fragment(element);
+        });
+      
+      this.steps = this.fragments.reduce(getSteps, []);
+      this.currentStep = 0;
+      
+      function getSteps(steps, fragment){
+        if(fragment.enter && steps.indexOf(fragment.enter) === -1) {
+          steps.push(fragment.enter);
+        }
+    
+        if(fragment.exit && steps.indexOf(fragment.exit) === 1) {
+          steps.push(fragment.exit);
+        }
+    
+        return steps.sort();
+      }
+    }
+    
+    FragmentsController.prototype.next = function() {
+      if(this.currentStep === this.steps.length) {
+        return false;
       }
       
-      this.currentFragment = 0;
+      this.fragments.filter(this.currentEnterFragments.bind(this)).forEach(this.showFragment);
+      this.fragments.filter(this.currentExitFragments.bind(this)).forEach(this.hideFragment);
+      this.currentStep++;
+      return true;
+    };
+    
+    FragmentsController.prototype.previous = function() {
+      if(this.currentStep === 0 || this.currentStep > this.steps.length) {
+        return false;
+      }
+      
+      this.currentStep--;
+      this.fragments.filter(this.currentEnterFragments.bind(this)).forEach(this.hideFragment);
+      this.fragments.filter(this.currentExitFragments.bind(this)).forEach(this.showFragment);
+      return true;
+    };
+    
+    FragmentsController.prototype.currentEnterFragments = function(fragment) {
+      return fragment.enter === this.steps[this.currentStep];
+    };
+    
+    FragmentsController.prototype.currentExitFragments = function(fragment) {
+      return fragment.exit === this.steps[this.currentStep];
+    };
+    
+    FragmentsController.prototype.showFragment = function(fragment) {
+      fragment.show();
+    };
+    
+    FragmentsController.prototype.hideFragment = function(fragment) {
+      fragment.hide();
+    };
+
+    function initFragments() {
+      this.fragmentCtrl = new FragmentsController(this);
     }
     
     function nextFragment() {
-      if(this.fragmentGroups.length === this.currentFragment) {
-        return false;
-      }
-      
-      executeFragmentGroup(this.fragmentGroups[this.currentFragment]);
-      this.currentFragment = this.currentFragment + 1;
-      
-      return true;
+      return this.fragmentCtrl.next();
     }
     
     function previousFragment() {
-      if(this.currentFragment === 0 || this.currentFragment + 1 >= this.fragmentGroups.length) {  
-        return false;
-      }
-      
-      this.currentFragment = this.currentFragment - 1;
-      resetFragementGroup(this.fragmentGroups[this.currentFragment])
-      
-      return true;
-    }
-    
-    /**
-     * Searches for elements with the data-fragment="1" tag and sorts them
-     */
-    function getFragmentGroups() {
-      var fragmentsEnter = [].slice.call(this.querySelectorAll('[data-enter]')).map(createEnterFragment);
-      var fragmentsExit = [].slice.call(this.querySelectorAll('[data-exit]')).map(createExitFragment);
-      
-      return fragmentsEnter
-        .concat(fragmentsExit)
-        .sort(sortFragments)
-        .reduce(groupFragments, []);
-      
-      function createEnterFragment(fragment) {
-        return { 
-            'type': 'enter',
-            'index': parseInt(fragment.getAttribute('data-enter'), 10),
-            'elem': fragment
-          };
-      }
-      function createExitFragment(fragment) {
-        return { 
-            'type': 'exit',
-            'index': parseInt(fragment.getAttribute('data-exit'), 10),
-            'elem': fragment
-          };
-      }
-      function sortFragments(fragmentA, fragmentB) {
-        if (fragmentA.index > fragmentB.index) {
-          return 1;
-        }
-        if (fragmentA.index < fragmentB.index) {
-          return -1;
-        }
-        return 0;
-      }
-      function groupFragments(groups, fragment) {
-       var group = groups.filter(function(f){ return f.index === fragment.index });
-       if(group.length > 0) {
-         var groupIndex = groups.indexOf(group[0]);
-         groups[groupIndex].fragments.push(fragment);
-       } else {
-         groups.push({ index: fragment.index, fragments: [fragment] });
-       }
-       return groups;
-      }
-    }
-  
-    function resetFragementGroup(fragmentGroup) {
-      fragmentGroup.fragments
-        .filter(function(fragment) { return fragment.type === "enter"; })
-        .forEach(function(enterFragment) { hideFragment(enterFragment); });
-      
-      fragmentGroup.fragments
-        .filter(function(fragment) { return fragment.type === "exit"; })
-        .forEach(function(exitFragment) { showFragment(exitFragment); });
-    }
-  
-    function executeFragmentGroup(fragmentGroup) {
-      fragmentGroup.fragments
-        .filter(function(fragment) { return fragment.type === "enter"; })
-        .forEach(function(enterFragment) { showFragment(enterFragment); });
-      
-      fragmentGroup.fragments
-        .filter(function(fragment) { return fragment.type === "exit"; })
-        .forEach(function(exitFragment) { hideFragment(exitFragment); });
-    }
-  
-    function showFragment(fragment) {
-      fragment.elem.style.visibility = '';
-    }
-    
-    function hideFragment(fragment) {
-      fragment.elem.style.visibility = 'hidden';
+      return this.fragmentCtrl.previous();
     }
     
     document.registerElement('web-slide', {prototype: slideProto});
