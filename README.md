@@ -92,14 +92,14 @@ Show:
 Hide: 
 
 ```html
-  <div data-hide="1">Hide me</div>
+  <div data-exit="1">Hide me</div>
 ```
 
 Mixed:
 
 ```html
   <!-- step1:shows p1 / step2:shows p2 / step3:hides div1 and shows div2-->
-  <div id="div1" data-hide="10">
+  <div id="div1" data-exit="10">
     <p data-show="1">Show first</p>
     <p data-show="2">Show second</p>
   </div>
