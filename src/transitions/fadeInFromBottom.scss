@@ -1,0 +1,14 @@
+@import "keyframes";
+
+web-slide, web-slide-title {
+  &[data-transition="fadeInFromBottom"] {
+    &.forward-out {
+      -webkit-animation: fadeIn .5s ease-in-out both;
+      animation: fadeIn .5s ease-in-out both;
+    }
+    & +.forward-in {
+      -webkit-animation: moveFromBottom .5s ease-in-out both;
+      animation: moveFromBottom .5s ease-in-out both;
+    }
+  }
+}
