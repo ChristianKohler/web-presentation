@@ -76,3 +76,12 @@
   60% { -webkit-transform: rotateZ(16deg); transform: rotateZ(16deg); }
   100% { -webkit-transform: translateY(100%) rotateZ(17deg); transform: translateY(100%) rotateZ(17deg); }
 }
+
+@-webkit-keyframes fadeIn {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes fadeIn {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
