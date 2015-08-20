@@ -73,6 +73,9 @@ Available transitions:
 * moveToLeft
 * moveFromBottom
 * newspaper
+* fadeIn
+* fadeInFromTop
+* fadeInFromBottom
 
 If you want to add a transitions to this library please make a pull-request.
 
@@ -89,7 +92,7 @@ Show:
   </ul>
 ```
 
-Hide: 
+Hide:
 
 ```html
   <div data-exit="1">Hide me</div>
