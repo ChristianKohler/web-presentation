@@ -1,6 +1,6 @@
 {
   "name": "web-presentation",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Pure Web Components Presentation Framework",
   "main": "index.js",
   "dependencies": {
@@ -14,6 +14,8 @@
     "gulp-webserver": "^0.7.1"
   },
   "scripts": {
+    "prestart": "npm install",
+    "start": "gulp",
     "ghpages": "git subtree push --prefix demo origin gh-pages"
   },
   "repository": {

@@ -39,8 +39,7 @@
       left: 50%;
       margin-top: -240px;
       margin-left: -320px;
-      opacity: 0;
-
+      
       -webkit-backface-visibility: hidden;
     	-moz-backface-visibility: hidden;
     	backface-visibility: hidden;
@@ -73,6 +72,31 @@
     }
     @keyframes defaultTransition {
       from { -webkit-transform: translateX(0); transform: translateX(0); }
+    }
+    
+    @media print {
+      :host {
+        display: block;
+        position: relative;
+        top: initial;
+        bottom: initial;
+        left: initial;
+        right: initial;
+        overflow: hidden;
+        width: 100%;
+        padding-top: 65%;
+        transition: none;
+        opacity: 1;
+        page-break-after: always;
+      }
+      
+      div#content { 
+        zoom: initial !important;
+      }
+      
+      ::content [data-enter] {
+        visibility: visible !important;
+      }
     }
   </style>
 

@@ -16,6 +16,12 @@
       background: rgba(70,255,140,0.9);
       transition: width 0.5s;
     }
+    
+    @media print {
+      :host {
+        display: none;
+      }
+    }
   </style>
   <div id="progress"></div>
 </template>
