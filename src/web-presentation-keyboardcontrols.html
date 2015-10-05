@@ -9,9 +9,11 @@
     document.onkeydown = function (event) {
         switch (event.keyCode) {
           case 32:
+          case 34:
           case 39:
             keyboardcontrols.parentNode.nextStep();
             break;
+          case 33:
           case 37:
             keyboardcontrols.parentNode.prevStep();
             break;
